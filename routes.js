@@ -5,7 +5,7 @@ import Cadastro from './Cadastro';
 import Login from './Login';
 import Home from './Home';
 import Inicio from './Inicio';
-import ProximaPagina from './ProximaPagina';
+import Usuario from './Usuario';
 
 const Stack = createStackNavigator();
 
@@ -34,8 +34,8 @@ export default function Routes() {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                    name="ProximaPagina"
-                    component={ProximaPagina}
+                    name="Usuario"
+                    component={Usuario}
                     options={{ headerShown: false }}
                 />
             </Stack.Navigator>

@@ -1,40 +1,72 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function Inicio() {
-    let [fontsLoaded] = useFonts({
-        'Raleway': require('./assets/fonts/Raleway-VariableFont_wght.ttf'),
-    });
-
+    const [fontsLoaded, setFontsLoaded] = useState(false);
     const navigation = useNavigation();
 
+    const loadFonts = async () => {
+        await Font.loadAsync({
+            'Raleway': require('./assets/fonts/Raleway-VariableFont_wght.ttf'),
+        });
+        setFontsLoaded(true);
+    };
+
+    useEffect(() => {
+        async function prepare() {
+            try {
+                await SplashScreen.preventAutoHideAsync();
+                await loadFonts();
+            } catch (e) {
+                console.warn(e);
+            } finally {
+                setFontsLoaded(true);
+            }
+        }
+
+        prepare();
+    }, []);
+
+    const onLayoutRootView = useCallback(async () => {
+        if (fontsLoaded) {
+            await SplashScreen.hideAsync();
+        }
+    }, [fontsLoaded]);
+
     if (!fontsLoaded) {
-        return <AppLoading />;
+        return null;
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.dentroTenda}>
-                <Image
-                    source={require('./assets/logo-tenda.png')}
-                    style={styles.image}
+        <ScrollView>
+            <View style={styles.container} onLayout={onLayoutRootView}>
+                <View style={styles.dentroTenda}>
+                    <Image
+                        source={require('./assets/logo-tenda.png')}
+                        style={styles.image}
+                    />
+                </View>
+                <Image  
+                source={require('./assets/imagem1.png')}
+                style={styles.image1}
                 />
+                <Text style={styles.texto}>
+                Suas <Text style={styles.textoMercado}>compras</Text> feitas de forma rápida e fácil
+                </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.botao}>Começar</Text>
+                </TouchableOpacity>
+                <Text style={styles.texto1}>
+                Entrar como <TouchableOpacity style={styles.textoConvida} onPress={() => navigation.navigate('Usuario')}>Convidado</TouchableOpacity>
+                </Text>
+                <StatusBar style="auto" />
             </View>
-            <Text style={styles.texto}>
-                Entre em nosso mercado e gaste seu dinheiro conscientemente
-            </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.botao}>Entrar</Text>
-            </TouchableOpacity>
-            <Text style={styles.texto1}>
-                Entrar como <TouchableOpacity style={styles.textoConvida} onPress={() => navigation.navigate('ProximaPagina')}>Convidado</TouchableOpacity>
-            </Text>
-            <StatusBar style="auto" />
-        </View>
+        </ScrollView>
     );
 }
 
@@ -51,18 +83,30 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 50,
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 130,
+        height: 130,
         resizeMode: 'contain',
+        marginTop: 60,
+    },
+    image1 : {
+        width: 330,
+        height: 330,
+        alignItems: 'center',
+        marginRight: 'auto',
+        marginLeft: 'auto'
     },
     texto: {
         textAlign: 'center',
         fontSize: 21,
-        marginTop: 120,
+        marginTop: 20,
+        width: 320,
         fontFamily: 'Raleway',
         fontWeight: 'bold',
         marginRight: 'auto',
         marginLeft: 'auto'
+    },
+    textoMercado: {
+        color: '#305BCC'
     },
     botao: {
         width: 150,
@@ -87,6 +131,6 @@ const styles = StyleSheet.create({
     },
     textoConvida: {
         color: '#305BCC',
-        fontWeight: 'bold' // Alterado para 'bold'
+        fontWeight: 'bold'
     }
 });

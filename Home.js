@@ -19,7 +19,7 @@ export default function Home() {
                 duration: 1500,
                 useNativeDriver: true,
             }).start(() => {
-                navigation.navigate('ProximaPagina');
+                navigation.navigate('Usuario');
             });
         }, 1500);
 
